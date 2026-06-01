@@ -81,6 +81,40 @@ class Log
     }
 
     /**
+     * Takes a JSON string and masks the sensitive fields.
+     *
+     * @param string $rawString     The JSON as a string.
+     *
+     * @return string       The JSON as a string after masking sensitive fields
+     */
+    private function maskSensitiveJsonString($rawString){
+        $patterns=array();
+        $replacements=array();
+
+        foreach ($this->sensitiveXmlTags as $i => $sensitiveTag){
+            $tag = $sensitiveTag->tagName;
+            $inputPattern = "(.+)";
+            $inputReplacement = "xxxx";
+
+            if(trim($sensitiveTag->pattern)) {
+                $inputPattern = $sensitiveTag->pattern;
+            }
+            $pattern = '"' . $tag . '"\s*:\s*"(?:.*)' . $inputPattern . '(?:.*)"';
+            $pattern = $this->addDelimiterFwdSlash($pattern);
+
+            if(trim($sensitiveTag->replacement)) {
+                $inputReplacement = $sensitiveTag->replacement;
+            }
+            $replacement = '"' . $tag . '":"' . $inputReplacement . '"';
+
+            $patterns[$i] = $pattern;
+            $replacements[$i] = $replacement;
+        }
+        $maskedString = preg_replace($patterns, $replacements, $rawString);
+        return $maskedString;
+    }
+
+    /**
      * Takes a string and masks credit card regex matching parts.
      *
      * @param string $rawString		The string.
@@ -241,6 +275,7 @@ class Log
             $maskedXml = $primtiveTypeAsString;
             if($messageType == "string") {
                 $maskedXml = $this->maskSensitiveXmlString($primtiveTypeAsString);
+                $maskedXml = $this->maskSensitiveJsonString($maskedXml);
             }
             //mask credit card numbers
             $message = $this->maskCreditCards($maskedXml);
