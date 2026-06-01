@@ -93,13 +93,13 @@ class Log
 
         foreach ($this->sensitiveXmlTags as $i => $sensitiveTag){
             $tag = $sensitiveTag->tagName;
-            $inputPattern = "(.+)";
+            $inputPattern = "([^\"]+)";
             $inputReplacement = "xxxx";
 
             if(trim($sensitiveTag->pattern)) {
                 $inputPattern = $sensitiveTag->pattern;
             }
-            $pattern = '"' . $tag . '"\s*:\s*"(?:.*)' . $inputPattern . '(?:.*)"';
+            $pattern = '"' . $tag . '"\s*:\s*"(?:[^"]*)' . $inputPattern . '(?:[^"]*)"';
             $pattern = $this->addDelimiterFwdSlash($pattern);
 
             if(trim($sensitiveTag->replacement)) {
