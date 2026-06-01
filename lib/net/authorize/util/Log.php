@@ -93,7 +93,7 @@ class Log
 
         foreach ($this->sensitiveXmlTags as $i => $sensitiveTag){
             $tag = $sensitiveTag->tagName;
-            $inputPattern = "([^\"]+)";
+            $inputPattern = "([^\"]+)"; //no need to mask null data
             $inputReplacement = "xxxx";
 
             if(trim($sensitiveTag->pattern)) {
