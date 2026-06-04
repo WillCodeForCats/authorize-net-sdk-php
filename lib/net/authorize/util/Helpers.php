@@ -21,6 +21,6 @@ class Helpers
         {
             self::$initialized = true;
         }
-        return date( DATE_RFC2822);
+        return (new \DateTime('now', new \DateTimeZone('UTC')))->format(DATE_RFC2822);
     }
 }
